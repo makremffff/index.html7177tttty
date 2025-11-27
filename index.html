@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Rewarded Ad Example</title>
+<script src="//libtl.com/sdk.js" data-zone="10245709" data-sdk="show_10245709"></script>
+</head>
+<body>
+<h1>مثال إعلان Rewarded</h1>
+
+<button id="showAdBtn">شاهد الإعلان للحصول على مكافأة</button>
+
+<script>
+// عند الضغط على الزر يتم عرض الإعلان
+document.getElementById('showAdBtn').addEventListener('click', function() {
+    show_10245709().then(() => {
+        // ينفذ هذا بعد مشاهدة الإعلان
+        alert('لقد شاهدت الإعلان! المكافأة تم تفعيلها.');
+        grantUserReward();
+    }).catch((err) => {
+        console.error('فشل عرض الإعلان:', err);
+        alert('حدث خطأ أثناء عرض الإعلان، حاول مرة أخرى.');
+    });
+});
+
+// دالة المكافأة
+function grantUserReward() {
+    console.log('تم منح المكافأة للمستخدم!');
+}
+</script>
+
+</body>
+</html>
