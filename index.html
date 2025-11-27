@@ -1,59 +1,68 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>Rewarded Ad 3D Button</title>
-<script src="//libtl.com/sdk.js" data-zone="10245709" data-sdk="show_10245709"></script>
-<style>
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: #1e1e1e;
-    font-family: Arial, sans-serif;
-}
+  <meta charset="UTF-8">
+  <title>إعلان مكافئ – زر دائم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{ text-align:center; padding:40px; font-family:Arial, sans-serif; }
+    #rewardBtn{
+      padding:12px 24px;
+      font-size:18px;
+      cursor:pointer;
+      background:#007bff;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+    }
+    #rewardBtn:hover{ background:#0056b3; }
+    #status{ margin-top:15px; font-weight:bold; }
+  </style>
 
-#showAdBtn {
-    padding: 20px 50px;
-    font-size: 24px;
-    color: #fff;
-    background: linear-gradient(145deg, #ff6a00, #ee0979);
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 6px #b34700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-#showAdBtn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px #b34700;
-}
-</style>
+  <!-- تحميل SDK -->
+  <script src="//libtl.com/sdk.js" data-zone="10245709" data-sdk="show_10245709"></script>
 </head>
 <body>
 
-<button id="showAdBtn">شاهد الإعلان</button>
+  <h2>شاهد الإعلان واربح المكافأة</h2>
+  <button id="rewardBtn">شاهد الإعلان الآن</button>
+  <div id="status"></div>
 
-<script>
-// دالة المكافأة للمستخدم
-function grantUserReward() {
-    console.log('تم منح المكافأة للمستخدم!');
-    alert('لقد شاهدت الإعلان! المكافأة تم تفعيلها.');
-}
+  <script>
+    const btn   = document.getElementById('rewardBtn');
+    const status= document.getElementById('status');
+    let adBusy = false; // لمنع الاستدعاء المتزامن
 
-// عند الضغط على الزر، عرض الإعلان
-document.getElementById('showAdBtn').addEventListener('click', function() {
-    show_10245709().then(() => {
-        grantUserReward();
-    }).catch((err) => {
-        console.error('فشل عرض الإعلان:', err);
-        alert('حدث خطأ أثناء عرض الإعلان، حاول مرة أخرى.');
+    btn.addEventListener('click', () => {
+      if (adBusy) return;     // لا تفعل شيئاً إذا كان الإعلان شغالاً
+      if (typeof show_10245709 !== 'function') {
+        status.textContent = 'الإعلان لم يُحمل بعد...';
+        return;
+      }
+
+      adBusy = true;
+      status.textContent = 'جارٍ تشغيل الإعلان...';
+
+      show_10245709()
+        .then(() => {
+          status.textContent = 'تمت المشاهدة! تم منحك المكافأة.';
+          giveUserReward();
+        })
+        .catch(err => {
+          status.textContent = 'لم تكتمل المشاهدة أو حدث خطأ.';
+          console.error(err);
+        })
+        .finally(() => {
+          adBusy = false;
+        });
     });
-});
-</script>
 
+    function giveUserReward() {
+      let coins = parseInt(localStorage.getItem('coins') || '0', 10);
+      coins += 10;
+      localStorage.setItem('coins', coins);
+      alert('مبروك! رصيدك الآن: ' + coins + ' عملة');
+    }
+  </script>
 </body>
 </html>
